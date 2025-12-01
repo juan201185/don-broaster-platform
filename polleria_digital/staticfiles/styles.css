@@ -1,0 +1,69 @@
+/* Estilos generales de la página */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #a82e17; /* Un color de pollo asado */
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+main {
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Estilo para cada producto */
+.producto {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.producto:hover {
+    transform: translateY(-5px);
+}
+
+.producto img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.producto h2 {
+    color: #a82e17;
+    margin-top: 10px;
+}
+
+.precio {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #4CAF50; /* Un color que evoca frescura */
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Don Broaster</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <img src="{% static 'logo_don_broaster.png' %}" alt="Logo de Don Broaster" class="logo-principal">
+            <h1 class="nombre-empresa">Don Broaster</h1>
+        </div>
+        <p><a href="{% url 'carrito' %}">← Volver al Carrito</a></p>
+    </header>
+
+    <main class="checkout-main">
+        <h2>Checkout: Finalizar Pedido</h2>
+        <div id="resumen-pago">
+            </div>
+
+        <form id="formulario-pago" class="formulario-pago">
+            
+            {% csrf_token %} 
+            
+            <h3>Datos de Envío y Pago</h3>
+            
+            <label for="nombre">Nombre Completo:</label>
+            <input type="text" id="nombre" required>
+
+            <label for="direccion">Dirección de Entrega:</label>
+            <input type="text" id="direccion" required>
+
+            <label for="metodo-pago">Método de Pago:</label>
+            <select id="metodo-pago" required>
+                <option value="tarjeta">Tarjeta de Crédito/Débito</option>
+                <option value="efectivo">Efectivo contra entrega</option>
+            </select>
+            
+            <button type="submit" id="btn-finalizar-pago">Confirmar y Pagar</button>
+        </form>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Don Broaster. Todos los derechos reservados.</p>
+        <p class="desarrollo">Desarrollado por Ingeniería Trejos</p>
+    </footer>
+
+    <script src="{% static 'script.js' %}"></script>
+    <script>
+        // Lógica para mostrar el total al cargar la página de pago
+        document.addEventListener('DOMContentLoaded', mostrarResumenPago);
+        document.getElementById('formulario-pago').addEventListener('submit', procesarPago);
+    </script>
+</body>
+</html>

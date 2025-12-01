@@ -1,0 +1,93 @@
+/* Estilos generales de la página */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #a82e17; /* Un color de pollo asado */
+    color: #fff;
+    padding: 20px 0;
+    text-align: center; /* Centra todo el contenido del encabezado */
+}
+
+/* Estilos para el contenedor del Logo y Nombre */
+.header-content {
+    display: flex; /* Permite alinear el logo y el texto */
+    flex-direction: column; /* Apila el logo sobre el nombre */
+    align-items: center; /* Centra los ítems en el contenedor */
+    margin-bottom: 10px; /* Espacio antes del eslogan */
+}
+
+/* Estilos para el Logo */
+.logo-principal {
+    width: 100px; /* Tamaño para que no domine toda la pantalla */
+    height: auto;
+    margin-bottom: 5px; /* Espacio entre el logo y el nombre */
+}
+
+/* Estilos para el Nombre de la Empresa (h1) */
+.nombre-empresa {
+    font-size: 3em; /* ¡Hacemos el texto del nombre MÁS GRANDE! */
+    margin: 5px 0;
+    line-height: 1; /* Elimina espacio vertical excesivo */
+}
+
+main {
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Estilo para cada producto */
+.producto {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.producto:hover {
+    transform: translateY(-5px);
+}
+
+.producto img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.producto h2 {
+    color: #a82e17;
+    margin-top: 10px;
+}
+
+.precio {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #4CAF50; /* Un color que evoca frescura */
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+footer .desarrollo {
+    font-size: 0.8em; /* Hacemos el texto un poco más pequeño */
+    color: #bbb;     /* Un gris claro para distinguirlo del texto principal */
+    margin-top: 5px; /* Pequeño espacio superior */
+}
