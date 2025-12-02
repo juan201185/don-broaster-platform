@@ -53,7 +53,7 @@ MIDDLEWARE = [
 ]
 
 # CORRECCIÓN CRÍTICA: Apuntamos directamente a 'urls' sin prefijo
-ROOT_URLCONF = 'polleria_digital.urls' 
+ROOT_URLCONF = 'urls'  # <-- Sin 'polleria_digital.'
 
 TEMPLATES = [
     {
@@ -71,7 +71,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'polleria_digital.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application' # <-- Sin 'polleria_digital.'
 
 
 # Database
