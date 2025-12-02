@@ -53,7 +53,7 @@ MIDDLEWARE = [
 ]
 
 # CORRECCIÓN CRÍTICA: Apuntamos directamente a 'urls' sin prefijo
-ROOT_URLCONF = 'urls' 
+ROOT_URLCONF = 'polleria_digital.urls' 
 
 TEMPLATES = [
     {
