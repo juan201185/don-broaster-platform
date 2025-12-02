@@ -3,17 +3,26 @@
 import os
 import sys
 
-# --- INICIO DE LA CORRECCIÓN CRÍTICA DE RUTA ---
-# Esto asegura que Python pueda encontrar la subcarpeta 'polleria_digital'
-# que contiene el settings.py.
+# --- CORRECCIÓN DE RUTA PARA DOBLE CARPETA ---
+if __name__ == '__main__':
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # 1. Agregamos la carpeta interna profunda al path (polleria_digital/polleria_digital)
+    # Esto permite encontrar 'urls.py' y 'settings.py' directamente.
+    inner_dir = os.path.join(current_dir, 'polleria_digital', 'polleria_digital')
+    if inner_dir not in sys.path:
+        sys.path.insert(0, inner_dir)
+
+    # 2. Agregamos la carpeta contenedora (para encontrar 'productos' y 'frontend')
+    container_dir = os.path.join(current_dir, 'polleria_digital')
+    if container_dir not in sys.path:
+        sys.path.insert(0, container_dir)
+# ---------------------------------------------
+
 def main():
     """Run administrative tasks."""
-    
-    # Agregamos la carpeta de configuración a la ruta de búsqueda de Python
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    sys.path.insert(0, os.path.join(current_dir, 'polleria_digital'))
-    
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'polleria_digital.settings')
+    # Apuntamos directo a 'settings' (porque ya agregamos su carpeta al path)
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
