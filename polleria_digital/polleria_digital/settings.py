@@ -8,14 +8,9 @@ from pathlib import Path
 import os
 import dj_database_url
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-
-# CORRECCIÓN BASADA EN TUS FOTOS:
-# settings.py está en: proyecto_sni/polleria_digital/polleria_digital/settings.py
-# 1. parent -> polleria_digital (interna)
-# 2. parent -> polleria_digital (carpeta contenedora donde están frontend y db.sqlite3)
-# ESTA ES LA RUTA CORRECTA PARA TU ESTRUCTURA ACTUAL:
-BASE_DIR = Path(__file__).resolve().parent.parent
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# BASE_DIR apunta a la carpeta 'polleria_digital' contenedora (donde está frontend y db.sqlite3)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
@@ -57,14 +52,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'polleria_digital.urls'
+# CORRECCIÓN CRÍTICA: Apuntamos directamente a 'urls' sin prefijo
+ROOT_URLCONF = 'urls' 
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # Al usar BASE_DIR con 2 parents, esto apunta a: polleria_digital/frontend
-        # ¡Exactamente donde está tu carpeta en la foto!
-        'DIRS': [BASE_DIR / 'frontend'],
+        'DIRS': [os.path.join(BASE_DIR, 'frontend')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,8 +78,7 @@ WSGI_APPLICATION = 'polleria_digital.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        # Esto apunta a: polleria_digital/db.sqlite3 (Tal como se ve en tu foto)
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -120,13 +113,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATICFILES_DIRS = []
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
 
 # --- CONFIGURACIÓN DE AUTENTICACIÓN JWT/DJOSER ---
 REST_FRAMEWORK = {
