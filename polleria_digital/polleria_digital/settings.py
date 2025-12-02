@@ -8,8 +8,10 @@ from pathlib import Path
 import os
 import dj_database_url
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-# Sube 2 niveles: de 'polleria_digital/polleria_digital' a 'polleria_digital' (donde está frontend)
+# --- CORRECCIÓN DE RUTA (BASE_DIR) ---
+# Estructura: proyecto_sni/polleria_digital/polleria_digital/settings.py
+# 1. dirname -> carpeta interna (donde está este archivo)
+# 2. dirname -> carpeta contenedora 'polleria_digital' (donde están 'frontend' y 'db.sqlite3')
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -52,13 +54,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# CORRECCIÓN CRÍTICA 1: Quitamos el prefijo 'polleria_digital.'
+# CORRECCIÓN: Usamos 'urls' directo porque manage.py/wsgi.py ya configuran el path
 ROOT_URLCONF = 'urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # Busca en la carpeta 'frontend' que está en BASE_DIR
+        # Busca 'frontend' en la carpeta contenedora (BASE_DIR)
         'DIRS': [os.path.join(BASE_DIR, 'frontend')],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -72,7 +74,7 @@ TEMPLATES = [
     },
 ]
 
-# CORRECCIÓN CRÍTICA 2: Quitamos el prefijo 'polleria_digital.'
+# CORRECCIÓN: Usamos 'wsgi.application' directo
 WSGI_APPLICATION = 'wsgi.application'
 
 
@@ -80,6 +82,7 @@ WSGI_APPLICATION = 'wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
+        # La base de datos está en la carpeta contenedora
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
@@ -114,8 +117,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
+
+# Dejamos esto vacío porque los archivos están dentro de la app 'productos/static/'
 STATICFILES_DIRS = []
+
+# Carpeta para recolección en la nube
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
