@@ -1,6 +1,6 @@
 // Define la URL de la API de tu módulo de productos
 const API_URL = 'http://127.0.0.1:8000/api/productos/';
-// Nueva URL de la API de Pedidos (¡Usaremos esta para el POST!)
+// Nueva URL de la API de Pedidos
 const API_ORDENES_URL = 'http://127.0.0.1:8000/api/ordenes/';
 
 const productosContainer = document.getElementById('productos-container');
@@ -32,7 +32,41 @@ function anadirAlCarrito(productoData) {
     alert(`¡${nombre} añadido al carrito!`);
 }
 
-// Asigna el manejador de eventos a todos los botones "Añadir al Carrito"
+// --- LÓGICA AVANZADA: ACTUALIZAR Y ELIMINAR ---
+
+// Función para aumentar o disminuir cantidad
+function actualizarCantidad(productoId, cambio) {
+    const carrito = obtenerCarrito();
+    const productoIndex = carrito.findIndex(item => item.id === productoId);
+
+    if (productoIndex !== -1) {
+        carrito[productoIndex].cantidad += cambio;
+
+        // Si la cantidad es 0 o menor, preguntamos o eliminamos directo
+        if (carrito[productoIndex].cantidad <= 0) {
+            eliminarDelCarrito(productoId);
+        } else {
+            guardarCarrito(carrito);
+            // Refrescamos la vista si estamos en el carrito
+            if (window.location.pathname.includes('/carrito')) {
+                mostrarDetalleCarrito();
+            }
+        }
+    }
+}
+
+// Función para eliminar un producto
+function eliminarDelCarrito(productoId) {
+    let carrito = obtenerCarrito();
+    carrito = carrito.filter(item => item.id !== productoId);
+    guardarCarrito(carrito);
+    
+    if (window.location.pathname.includes('/carrito')) {
+        mostrarDetalleCarrito();
+    }
+}
+
+// Asigna el manejador de eventos a los botones de añadir
 function asignarManejadoresCarrito() {
     const botonesAgregar = document.querySelectorAll('.btn-agregar');
     if (botonesAgregar.length > 0) {
@@ -45,57 +79,13 @@ function asignarManejadoresCarrito() {
     }
 }
 
-// Contador del carrito
 function actualizarContadorCarrito() {
     const carrito = obtenerCarrito();
     const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
-    console.log(`Carrito actualizado: ${totalItems} ítems.`); 
+    console.log(`Carrito actualizado: ${totalItems} ítems.`);
+    // Aquí podrías actualizar un badge en el icono del carrito
 }
 
-// --- LÓGICA AVANZADA: ACTUALIZAR Y ELIMINAR ÍTEMS DEL CARRITO ---
-
-/**
- * Función para actualizar la cantidad (aumentar o disminuir)
- * @param {string} productoId - ID del producto a modificar.
- * @param {number} cambio - Cantidad a sumar (1) o restar (-1).
- */
-function actualizarCantidad(productoId, cambio) {
-    const carrito = obtenerCarrito();
-    // Encontrar el índice del producto en el array del carrito
-    const productoIndex = carrito.findIndex(item => item.id === productoId);
-
-    if (productoIndex !== -1) {
-        carrito[productoIndex].cantidad += cambio;
-        
-        // CRÍTICO: Si la cantidad llega a cero o menos, se elimina el producto
-        if (carrito[productoIndex].cantidad <= 0) {
-            eliminarDelCarrito(productoId);
-        } else {
-            guardarCarrito(carrito);
-            // Si la página del carrito está abierta, la recargamos para mostrar el cambio
-            if (window.location.pathname.includes('/carrito')) {
-                mostrarDetalleCarrito(); 
-            }
-        }
-    }
-}
-
-/**
- * Función para eliminar un producto completamente del carrito.
- * @param {string} productoId - ID del producto a eliminar.
- */
-function eliminarDelCarrito(productoId) {
-    let carrito = obtenerCarrito();
-    // Filtra el carrito para crear una nueva lista sin el producto
-    carrito = carrito.filter(item => item.id !== productoId);
-
-    guardarCarrito(carrito);
-    
-    // Si la página del carrito está abierta, la recargamos
-    if (window.location.pathname.includes('/carrito')) {
-        mostrarDetalleCarrito();
-    }
-}
 
 // --- LÓGICA DE VISTA DE CARRITO (carrito.html) ---
 
@@ -119,7 +109,7 @@ function mostrarDetalleCarrito() {
                         <th>Precio</th>
                         <th>Cantidad</th>
                         <th>Subtotal</th>
-                        <th>Eliminar</th> </tr>
+                        <th>Acción</th> </tr>
                 </thead>
                 <tbody>
         `;
@@ -129,19 +119,17 @@ function mostrarDetalleCarrito() {
             const subtotal = item.precio * item.cantidad;
             totalGeneral += subtotal;
 
+            // AQUI ESTÁ LA INTEGRACIÓN DE LOS BOTONES EN LA VISTA
             tablaHTML += `
                 <tr>
                     <td>${item.nombre}</td>
                     <td>$${item.precio.toFixed(2)}</td>
-                    
                     <td class="cantidad-control">
                         <button class="btn-control" onclick="actualizarCantidad('${item.id}', -1)">-</button>
-                        ${item.cantidad}
+                        <span>${item.cantidad}</span>
                         <button class="btn-control" onclick="actualizarCantidad('${item.id}', 1)">+</button>
                     </td>
-                    
                     <td>$${subtotal.toFixed(2)}</td>
-                    
                     <td>
                         <button class="btn-eliminar" onclick="eliminarDelCarrito('${item.id}')">X</button>
                     </td>
@@ -154,7 +142,6 @@ function mostrarDetalleCarrito() {
             </table>
         `;
 
-        // Mostrar la tabla y los totales
         carritoDetalle.innerHTML = tablaHTML;
         carritoTotales.innerHTML = `
             <div class="resumen-total">
@@ -167,7 +154,6 @@ function mostrarDetalleCarrito() {
 
 
 // --- LÓGICA DE PROCESAMIENTO DE PAGO (pago.html) ---
-// (Misma lógica de Pago/Simulación de API)
 
 function mostrarResumenPago() {
     const carrito = obtenerCarrito();
@@ -181,39 +167,74 @@ function mostrarResumenPago() {
     }
 }
 
-function procesarPago(event) {
-    event.preventDefault(); 
-    // ... (El resto de la lógica de envío de la orden) ...
-    // Nota: El código real de envío de datos fue reemplazado por la simulación
-    // para mantener el flujo funcional hasta que se decida qué API usar.
-    
+// Función REAL para enviar pedido al Backend
+async function procesarPago(event) {
+    event.preventDefault();
+
     const carrito = obtenerCarrito();
     const totalPagar = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+    
     const cliente_nombre = document.getElementById('nombre').value;
     const cliente_direccion = document.getElementById('direccion').value;
+    const metodo_pago = document.getElementById('metodo-pago').value;
 
     if (carrito.length === 0) {
-        alert("El carrito está vacío. Por favor, agregue productos.");
+        alert("El carrito está vacío.");
         return;
     }
     
     if (!cliente_nombre || !cliente_direccion) {
-        alert("Por favor, complete su Nombre y Dirección de Entrega.");
+        alert("Por favor, complete sus datos de envío.");
         return;
     }
 
-    // El código de envío real a la API de Órdenes debe ser habilitado aquí
-    // Por ahora, solo simulación para no romper el flujo:
-    
-    // Finalización exitosa del pedido (simulación)
-    alert("¡PEDIDO CONFIRMADO CON ÉXITO!\nGracias por su compra. Su pollo Don Broaster está en camino.");
+    // 1. Preparar datos para la API
+    const detalles = carrito.map(item => ({
+        producto: item.id,
+        nombre_producto: item.nombre,
+        cantidad: item.cantidad,
+        precio_unitario: item.precio,
+    }));
 
-    localStorage.removeItem('carritoDonBroaster');
-    actualizarContadorCarrito();
-    window.location.href = "/"; 
+    const ordenData = {
+        cliente_nombre: cliente_nombre,
+        cliente_direccion: cliente_direccion,
+        total_orden: totalPagar.toFixed(2),
+        metodo_pago: metodo_pago,
+        detalles: detalles,
+    };
+
+    // 2. Obtener token CSRF (seguridad)
+    const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+    const csrfToken = csrfInput ? csrfInput.value : '';
+
+    // 3. Enviar a la API
+    try {
+        const respuesta = await fetch(API_ORDENES_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify(ordenData),
+        });
+
+        if (respuesta.ok) {
+            alert("¡PEDIDO CONFIRMADO Y GUARDADO EN DB!\nGracias por su compra.");
+            localStorage.removeItem('carritoDonBroaster');
+            actualizarContadorCarrito();
+            window.location.href = "/"; 
+        } else {
+            const errorData = await respuesta.json();
+            console.error("Error del servidor:", errorData);
+            alert(`Error al procesar el pedido. Intente nuevamente.`);
+        }
+    } catch (error) {
+        console.error("Error de red:", error);
+        alert("Error de conexión.");
+    }
 }
 
-// Conecta el botón en pago.html al manejador de eventos.
 function conectarBotonPago() {
     const formularioPago = document.getElementById('formulario-pago');
     if (formularioPago) {
@@ -223,30 +244,28 @@ function conectarBotonPago() {
 
 // --- LÓGICA DE CARGA DE PRODUCTOS DESDE API ---
 
-// Función para obtener los productos de la API
 async function obtenerProductos() {
     try {
         const respuesta = await fetch(API_URL);
-        const data = await respuesta.json(); 
+        const data = await respuesta.json();
         
-        // Asume que la lista de productos está en 'results' (estándar de DRF)
         const productos = Array.isArray(data.results) ? data.results : (Array.isArray(data) ? data : []);
 
-        if (productos && Array.isArray(productos) && productos.length > 0) {
+        if (productos && productos.length > 0) {
             mostrarProductos(productos);
         } else {
-            productosContainer.innerHTML = '<p>El menú está temporalmente agotado.</p>';
+            if (productosContainer) productosContainer.innerHTML = '<p>El menú está temporalmente agotado.</p>';
         }
 
     } catch (error) {
-        console.error('Error al obtener los productos:', error);
-        productosContainer.innerHTML = '<p>Lo sentimos, no pudimos cargar el menú. Revisa si el servidor de Django está corriendo.</p>';
+        console.error('Error API:', error);
+        if (productosContainer) productosContainer.innerHTML = '<p>No se pudo cargar el menú.</p>';
     }
 }
 
-// Función para mostrar los productos en la página y crear los botones
 function mostrarProductos(productos) {
-    productosContainer.innerHTML = ''; // Limpia el contenedor
+    if (!productosContainer) return;
+    productosContainer.innerHTML = '';
 
     productos.forEach(producto => {
         const productoHTML = `
@@ -255,7 +274,6 @@ function mostrarProductos(productos) {
                 <img src="${producto.imagen_url}" alt="${producto.nombre}">
                 <p>${producto.descripcion}</p>
                 <p class="precio">$${producto.precio}</p>
-                
                 <button class="btn-agregar" 
                         data-id="${producto.id}" 
                         data-nombre="${producto.nombre}" 
@@ -267,33 +285,32 @@ function mostrarProductos(productos) {
         productosContainer.innerHTML += productoHTML;
     });
 
-    asignarManejadoresCarrito(); 
+    asignarManejadoresCarrito();
 }
 
-// --- LLAMADAS DE INICIO (Función de control para ejecución segura) ---
+// --- FUNCIÓN DE INICIO UNIFICADA ---
 
 function iniciarAplicacion() {
     const ruta = window.location.pathname;
     
-    // 1. Lógica para la página de INICIO (index.html)
-    if (ruta === '/' || ruta === '/index.html') {
+    // Lógica para Home
+    if (ruta === '/' || ruta === '/index.html' || ruta.endsWith('/')) {
         obtenerProductos();
     }
     
-    // 2. Lógica para la página del CARRITO (carrito.html)
+    // Lógica para Carrito
     if (ruta.includes('/carrito')) {
         mostrarDetalleCarrito();
     }
     
-    // 3. Lógica para la página de PAGO (pago.html)
+    // Lógica para Pago
     if (ruta.includes('/pago')) {
         mostrarResumenPago();
         conectarBotonPago();
     }
     
-    // El contador del carrito se actualiza en todas las páginas
     actualizarContadorCarrito();
 }
 
-// Ejecución FINAL: Forzamos la ejecución de la lógica después de que el DOM esté listo.
+// Ejecución segura al cargar el DOM
 document.addEventListener('DOMContentLoaded', iniciarAplicacion);
