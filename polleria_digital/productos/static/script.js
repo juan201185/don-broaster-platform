@@ -1,7 +1,8 @@
-// Define la URL de la API de tu módulo de productos
-const API_URL = 'http://127.0.0.1:8000/api/productos/';
-// Nueva URL de la API de Pedidos
-const API_ORDENES_URL = 'http://127.0.0.1:8000/api/ordenes/';
+// CORRECCIÓN: Usamos rutas relativas (sin http://dominio.com)
+// Esto hace que funcione automáticamente en Local y en la Nube.
+
+const API_URL = '/api/productos/'; 
+const API_ORDENES_URL = '/api/ordenes/';
 
 const productosContainer = document.getElementById('productos-container');
 
